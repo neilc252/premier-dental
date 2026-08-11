@@ -434,9 +434,9 @@ export const UserRolesManagement: React.FC<UserRolesManagementProps> = ({
 
   const isPracticeAdmin = 
     isSaaSAdmin ||
-    currentStaff.role === 'Practice Owner' ||
-    currentStaff.role === 'Practice Admin' ||
-    currentStaff.role === 'Office Manager' ||
+    (currentStaff.role as string) === 'Practice Owner' ||
+    (currentStaff.role as string) === 'Practice Admin' ||
+    (currentStaff.role as string) === 'Office Manager' ||
     currentStaff.title?.toLowerCase().includes('owner') ||
     currentStaff.title?.toLowerCase().includes('admin') ||
     currentStaff.title?.toLowerCase().includes('practice') ||

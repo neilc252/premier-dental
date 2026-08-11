@@ -11,7 +11,11 @@ import {
   Mail, 
   CreditCard, 
   PenTool,
-  Loader2
+  Loader2,
+  Mic,
+  MicOff,
+  Radio,
+  Volume2
 } from 'lucide-react';
 
 interface SoapNoteGeneratorProps {
@@ -28,6 +32,8 @@ export const SoapNoteGenerator: React.FC<SoapNoteGeneratorProps> = ({
   const [assessment, setAssessment] = useState('');
   const [plan, setPlan] = useState('');
   const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [isVoiceListening, setIsVoiceListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
 
   // Clear note draft input fields when switching patient
   React.useEffect(() => {
@@ -35,7 +41,22 @@ export const SoapNoteGenerator: React.FC<SoapNoteGeneratorProps> = ({
     setObjective('');
     setAssessment('');
     setPlan('');
+    setVoiceTranscript('');
+    setIsVoiceListening(false);
   }, [patient.id]);
+
+  const handleApplyVoicePreset = (text: string) => {
+    setVoiceTranscript(text);
+    setIsVoiceListening(true);
+    setTimeout(() => {
+      setIsVoiceListening(false);
+      // Auto structure into SOAP fields
+      setSubjective(`Patient presents for scheduled dental procedure. Reports no localized pain or thermal sensitivity on chief complaint tooth. Dictated chairside: "${text}"`);
+      setObjective(`Objective findings recorded chairside: Examined soft tissue, TMJ, and periodontal probing depths (1-3mm). Administered 2% Lidocaine with 1:100k Epinephrine. Prepared tooth structure, removed decay, restored with shade A2 nano-composite, adjusted occlusion, polished.`);
+      setAssessment(`Diagnosis: Localized dental caries / tooth structure loss. Prognosis: Favorable post-restorative outcome.`);
+      setPlan(`Completed procedure. Post-operative instructions provided (avoid chewing until numbness wears off). Scheduled 6-month hygiene recall.`);
+    }, 1200);
+  };
 
   const handleAiGenerateSoap = async () => {
     setIsAiGenerating(true);
@@ -147,6 +168,77 @@ export const SoapNoteGenerator: React.FC<SoapNoteGeneratorProps> = ({
             <span>No critical drug allergies or systemic medical conditions flagged.</span>
           </div>
         )}
+      </div>
+
+      {/* FEATURE #3: Chairside AI Voice Copilot & Hands-Free Dictation */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-950 to-cyan-950 rounded-2xl border border-cyan-800/80 p-5 text-white shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cyan-900/60 pb-3">
+          <div className="flex items-center gap-3">
+            <div className={`p-2.5 rounded-xl border transition-all ${
+              isVoiceListening 
+                ? 'bg-rose-950 text-rose-300 border-rose-700 animate-pulse' 
+                : 'bg-cyan-950 text-cyan-300 border-cyan-700'
+            }`}>
+              <Mic className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-sm text-cyan-100">Chairside Voice Dictation & AI Clinical Copilot</h3>
+                {isVoiceListening && (
+                  <span className="flex items-center gap-1 text-[10px] font-mono text-rose-400 bg-rose-950/80 px-2 py-0.5 rounded-full border border-rose-800">
+                    <Radio className="w-3 h-3 animate-ping" /> LISTENING...
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-300/80">
+                Dictate clinical observations hands-free. AI parses terms directly into S.O.A.P. categories.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsVoiceListening(!isVoiceListening)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md ${
+              isVoiceListening 
+                ? 'bg-rose-600 hover:bg-rose-500 text-white' 
+                : 'bg-cyan-600 hover:bg-cyan-500 text-white'
+            }`}
+          >
+            {isVoiceListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            <span>{isVoiceListening ? 'Stop Recording' : 'Start Mic Dictation'}</span>
+          </button>
+        </div>
+
+        {/* Quick Dictation Presets */}
+        <div className="space-y-2">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+            <Volume2 className="w-3.5 h-3.5" />
+            <span>Simulate Chairside Voice Presets:</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => handleApplyVoicePreset("Tooth #14 MOD composite, 2% lidocaine epinephrine 1:100k administered, decay removed, shade A2 nano-hybrid restored.")}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-200 border border-slate-700 text-xs font-medium transition-all cursor-pointer"
+            >
+              "Restorative #14 MOD Composite"
+            </button>
+            <button
+              type="button"
+              onClick={() => handleApplyVoicePreset("Patient presented for 6-month recall prophy, full mouth probing 1-3mm, light supragingival calculus, adult prophy D1110 completed.")}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-200 border border-slate-700 text-xs font-medium transition-all cursor-pointer"
+            >
+              "Hygiene Prophy & Probing"
+            </button>
+            <button
+              type="button"
+              onClick={() => handleApplyVoicePreset("Crown prep Tooth #3 porcelain fused to high noble metal, retraction cord placed, final vinyl polysiloxane impression taken.")}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-200 border border-slate-700 text-xs font-medium transition-all cursor-pointer"
+            >
+              "Crown Prep #3 Impression"
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* SOAP Note Writer Section */}

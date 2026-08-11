@@ -55,26 +55,26 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Logo & Brand */}
           <div 
             onClick={onGoHome}
-            className={`flex items-center gap-3 ${onGoHome ? 'cursor-pointer group' : ''}`}
+            className={`flex items-center gap-2 sm:gap-3 ${onGoHome ? 'cursor-pointer group' : ''}`}
             title={onGoHome ? 'Return to Home Landing Page' : undefined}
           >
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-              <Stethoscope className="h-6 w-6" />
+            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform shrink-0">
+              <Stethoscope className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-cyan-300 bg-clip-text text-transparent group-hover:text-cyan-300 transition-colors">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-bold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-cyan-300 bg-clip-text text-transparent group-hover:text-cyan-300 transition-colors">
                   Premier
                 </span>
-                <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold bg-cyan-950 text-cyan-300 border border-cyan-800/80 rounded-full">
-                  Dental PMS
+                <span className="px-1.5 py-0.5 text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold bg-cyan-950 text-cyan-300 border border-cyan-800/80 rounded-full">
+                  PMS
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 flex items-center gap-1">
-                <span>Practice Management System</span>
-                <span className="text-slate-600">•</span>
+              <p className="text-[10px] sm:text-[11px] text-slate-400 flex items-center gap-1">
+                <span className="hidden xs:inline">Practice Management</span>
+                <span className="text-slate-600 hidden xs:inline">•</span>
                 <span className="text-emerald-400 flex items-center gap-0.5">
-                  <ShieldCheck className="h-3 w-3" /> HIPAA Ready
+                  <ShieldCheck className="h-3 w-3" /> HIPAA
                 </span>
               </p>
             </div>
@@ -298,6 +298,64 @@ export const Header: React.FC<HeaderProps> = ({
 
           </div>
 
+        </div>
+
+        {/* Mobile Search & AI Scribe Row */}
+        <div className="md:hidden pb-3 pt-1 flex items-center gap-2 border-t border-slate-800/80">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search Patient..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchResults(true);
+              }}
+              onFocus={() => setShowSearchResults(true)}
+              className="w-full pl-8 pr-3 py-1 text-xs bg-slate-800 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+            />
+
+            {/* Mobile Dropdown Search Results */}
+            {showSearchResults && searchQuery.trim().length > 0 && (
+              <div className="absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden z-50 max-h-60 overflow-y-auto">
+                <div className="px-3 py-1 text-[10px] font-semibold text-slate-400 bg-slate-800/50 border-b border-slate-800">
+                  Search Results ({filteredPatients.length})
+                </div>
+                {filteredPatients.length === 0 ? (
+                  <div className="p-3 text-xs text-slate-400 text-center">No patient found</div>
+                ) : (
+                  filteredPatients.map((patient) => (
+                    <button
+                      key={patient.id}
+                      onClick={() => {
+                        onSelectPatient(patient);
+                        setShowSearchResults(false);
+                        setSearchQuery('');
+                      }}
+                      className="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-800 border-b border-slate-800/50 last:border-none cursor-pointer"
+                    >
+                      <div>
+                        <div className="font-bold text-xs text-slate-100">{patient.firstName} {patient.lastName}</div>
+                        <div className="text-[10px] font-mono text-cyan-400">{patient.chartNumber}</div>
+                      </div>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                        {patient.insuranceProvider}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={onOpenAiAssist}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 text-white text-xs font-bold shadow-xs cursor-pointer shrink-0"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-cyan-200" />
+            <span>AI Scribe</span>
+          </button>
         </div>
       </div>
     </header>

@@ -178,7 +178,8 @@ export const ToothChart: React.FC<ToothChartProps> = ({
               <span className="text-xs text-slate-400">Right → Left</span>
             </div>
 
-            <div className="grid grid-cols-8 sm:grid-cols-16 gap-1.5 sm:gap-2 justify-items-center">
+            <div className="overflow-x-auto pb-2">
+              <div className="grid grid-cols-16 min-w-[620px] sm:min-w-0 gap-1.5 sm:gap-2 justify-items-center">
               {UPPER_ARCH.map((toothNum) => {
                 const isSelected = selectedTooth === toothNum;
                 const conds = getToothConditions(toothNum);
@@ -297,6 +298,7 @@ export const ToothChart: React.FC<ToothChartProps> = ({
                   </button>
                 );
               })}
+              </div>
             </div>
           </div>
 
@@ -309,7 +311,8 @@ export const ToothChart: React.FC<ToothChartProps> = ({
               <span className="text-xs text-slate-400">Left → Right</span>
             </div>
 
-            <div className="grid grid-cols-8 sm:grid-cols-16 gap-1.5 sm:gap-2 justify-items-center">
+            <div className="overflow-x-auto pb-2">
+              <div className="grid grid-cols-16 min-w-[620px] sm:min-w-0 gap-1.5 sm:gap-2 justify-items-center">
               {LOWER_ARCH.map((toothNum) => {
                 const isSelected = selectedTooth === toothNum;
                 const conds = getToothConditions(toothNum);
@@ -417,6 +420,7 @@ export const ToothChart: React.FC<ToothChartProps> = ({
                   </button>
                 );
               })}
+              </div>
             </div>
           </div>
 

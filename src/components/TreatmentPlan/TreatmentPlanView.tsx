@@ -11,7 +11,14 @@ import {
   FileCheck,
   Loader2,
   X,
-  MessageSquare
+  MessageSquare,
+  CreditCard,
+  Calculator,
+  ShieldCheck,
+  CheckCircle2,
+  PenTool,
+  TrendingUp,
+  Eye
 } from 'lucide-react';
 
 interface TreatmentPlanViewProps {
@@ -33,10 +40,18 @@ export const TreatmentPlanView: React.FC<TreatmentPlanViewProps> = ({
   const [showExplainModal, setShowExplainModal] = useState<boolean>(false);
   const [aiExplanation, setAiExplanation] = useState<string>('');
   const [isExplaining, setIsExplaining] = useState<boolean>(false);
+  
+  // Financial Calculator & 3D Visualizer States
+  const [selectedFinancingMonths, setSelectedFinancingMonths] = useState<12 | 24 | 36>(12);
+  const [patientSigned, setPatientSigned] = useState<boolean>(false);
+  const [showVisualCompare, setShowVisualCompare] = useState<boolean>(false);
 
   const totalFee = patient.treatmentPlans.reduce((acc, item) => acc + item.fee, 0);
   const totalInsuranceEst = patient.treatmentPlans.reduce((acc, item) => acc + item.insuranceEst, 0);
   const totalPatientResp = patient.treatmentPlans.reduce((acc, item) => acc + item.patientResp, 0);
+
+  // Calculate monthly payment based on financing duration
+  const monthlyEstimate = totalPatientResp > 0 ? (totalPatientResp / selectedFinancingMonths).toFixed(2) : '0.00';
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,6 +136,132 @@ export const TreatmentPlanView: React.FC<TreatmentPlanViewProps> = ({
           <div>
             <div className="text-[10px] uppercase font-bold text-cyan-300">Patient Co-Pay</div>
             <div className="text-base font-extrabold font-mono text-cyan-300">${totalPatientResp.toFixed(2)}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* FEATURE #4: Treatment Plan 3D ROI & Patient Financing Calculator */}
+      <div className="bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-900 rounded-2xl border border-cyan-800/80 p-6 text-white shadow-xl space-y-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-cyan-900/60 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-cyan-900/80 rounded-2xl border border-cyan-700/80 text-cyan-300">
+              <Calculator className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-white">Treatment Financing & Visual Co-Pay Calculator</h3>
+                <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-mono font-bold border border-cyan-500/40">
+                  0% APR Financing Options
+                </span>
+              </div>
+              <p className="text-xs text-slate-300/80">
+                Help {patient.firstName} afford essential dental care with flexible CareCredit/Sunbit monthly payment schedules.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowVisualCompare(!showVisualCompare)}
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
+            >
+              <Eye className="w-4 h-4 text-cyan-400" />
+              <span>{showVisualCompare ? 'Hide Visual Simulation' : '3D Smile Restoration Preview'}</span>
+            </button>
+
+            <button
+              onClick={() => setPatientSigned(!patientSigned)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shadow-md ${
+                patientSigned 
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white' 
+                  : 'bg-cyan-600 hover:bg-cyan-500 text-white'
+              }`}
+            >
+              <PenTool className="w-4 h-4" />
+              <span>{patientSigned ? 'Plan Authorized & E-Signed ✓' : 'Capture Patient E-Signature'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Visual 3D Simulation Comparison Banner */}
+        {showVisualCompare && (
+          <div className="bg-slate-950/80 rounded-xl p-4 border border-cyan-900/80 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="bg-slate-900 p-4 rounded-xl border border-rose-950/80 space-y-2">
+              <div className="flex items-center justify-between font-bold text-rose-300">
+                <span>Before Treatment (Current Condition)</span>
+                <span className="text-[10px] bg-rose-950 text-rose-300 px-2 py-0.5 rounded">Active Decay</span>
+              </div>
+              <div className="h-24 bg-slate-950 rounded-lg flex items-center justify-center text-slate-500 text-center font-mono border border-slate-800">
+                [ Tooth #3 & #14 Occlusal Caries + Marginal Breakdown ]
+              </div>
+            </div>
+
+            <div className="bg-slate-900 p-4 rounded-xl border border-emerald-950/80 space-y-2">
+              <div className="flex items-center justify-between font-bold text-emerald-300">
+                <span>After Treatment (Restored Smile)</span>
+                <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded">Full Restoration</span>
+              </div>
+              <div className="h-24 bg-cyan-950/40 rounded-lg flex items-center justify-center text-cyan-200 text-center font-mono border border-cyan-800/80">
+                [ Tooth #3 Porcelain Crown + #14 Nano-Composite Restored ]
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Monthly Payment Calculator Widgets */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div 
+            onClick={() => setSelectedFinancingMonths(12)}
+            className={`p-4 rounded-xl border cursor-pointer transition-all ${
+              selectedFinancingMonths === 12
+                ? 'bg-cyan-950/90 border-cyan-400 text-cyan-100 shadow-lg ring-2 ring-cyan-500/40'
+                : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between font-bold mb-1">
+              <span>12 Months 0% APR</span>
+              <CreditCard className="w-4 h-4 text-cyan-400" />
+            </div>
+            <div className="text-2xl font-black font-mono text-cyan-300">
+              ${(totalPatientResp / 12).toFixed(2)}<span className="text-xs font-normal text-slate-400">/mo</span>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1">CareCredit Same-As-Cash Promo</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedFinancingMonths(24)}
+            className={`p-4 rounded-xl border cursor-pointer transition-all ${
+              selectedFinancingMonths === 24
+                ? 'bg-cyan-950/90 border-cyan-400 text-cyan-100 shadow-lg ring-2 ring-cyan-500/40'
+                : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between font-bold mb-1">
+              <span>24 Months Low-Pay</span>
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div className="text-2xl font-black font-mono text-emerald-300">
+              ${(totalPatientResp / 24).toFixed(2)}<span className="text-xs font-normal text-slate-400">/mo</span>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1">Sunbit Dental Financing Option</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedFinancingMonths(36)}
+            className={`p-4 rounded-xl border cursor-pointer transition-all ${
+              selectedFinancingMonths === 36
+                ? 'bg-cyan-950/90 border-cyan-400 text-cyan-100 shadow-lg ring-2 ring-cyan-500/40'
+                : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between font-bold mb-1">
+              <span>36 Months Budget</span>
+              <ShieldCheck className="w-4 h-4 text-purple-400" />
+            </div>
+            <div className="text-2xl font-black font-mono text-purple-300">
+              ${(totalPatientResp / 36).toFixed(2)}<span className="text-xs font-normal text-slate-400">/mo</span>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1">Extended Flexible Plan</p>
           </div>
         </div>
       </div>

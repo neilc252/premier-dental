@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Send, Bell, Star, CheckCircle2, Phone, User, Sparkles, Clock, RefreshCw } from 'lucide-react';
+import { MessageSquare, Send, Bell, Star, CheckCircle2, Phone, User, Sparkles, Clock, RefreshCw, Calendar, AlertTriangle, Users, ArrowUpRight } from 'lucide-react';
 import { Patient } from '../../types';
 
 interface PatientEngagementViewProps {
@@ -26,6 +26,9 @@ export const PatientEngagementView: React.FC<PatientEngagementViewProps> = ({
   patients,
   selectedPatient,
 }) => {
+  const [showHygieneEngine, setShowHygieneEngine] = useState<boolean>(true);
+  const [campaignSent, setCampaignSent] = useState<boolean>(false);
+
   const [threads, setThreads] = useState<SmsThread[]>([
     {
       id: 'thread-1',
@@ -90,6 +93,12 @@ export const PatientEngagementView: React.FC<PatientEngagementViewProps> = ({
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const activeThread = threads.find(t => t.id === activeThreadId) || threads[0];
+
+  const handleDispatchHygieneCampaign = () => {
+    setCampaignSent(true);
+    setToastMsg(`AI Hygiene Retention Campaign dispatched! 28 overdue recall SMS texts sent with 1-click booking links.`);
+    setTimeout(() => setToastMsg(null), 4000);
+  };
 
   const handleSendSms = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,6 +175,71 @@ export const PatientEngagementView: React.FC<PatientEngagementViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* FEATURE #5: Smart Recall & Automated Hygiene Retention Engine */}
+      {showHygieneEngine && (
+        <div className="bg-gradient-to-r from-cyan-950 via-slate-900 to-teal-950 rounded-2xl border border-teal-800/80 p-6 text-white shadow-xl space-y-4 relative overflow-hidden">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-teal-900/60 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-teal-900/80 rounded-2xl border border-teal-700/80 text-teal-300">
+                <RefreshCw className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-white">Smart Recall & Hygiene Retention Engine</h3>
+                  <span className="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-mono font-bold border border-teal-500/40">
+                    AI Churn Prevention Active
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300/80">
+                  Scans patient history for overdue hygiene, unperformed treatment plans, and sends personalized SMS outreach with instant booking links.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleDispatchHygieneCampaign}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md ${
+                campaignSent
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-teal-500 hover:bg-teal-400 text-slate-950'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>{campaignSent ? 'Hygiene Recall Dispatched (28 Patients) ✓' : 'Dispatch AI Hygiene Campaign'}</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div className="bg-slate-900/90 border border-teal-900/60 p-3.5 rounded-xl space-y-1">
+              <div className="flex items-center justify-between font-bold text-teal-300">
+                <span>Overdue Hygiene Recalls</span>
+                <Users className="w-4 h-4 text-teal-400" />
+              </div>
+              <div className="text-xl font-black font-mono text-white">28 Patients</div>
+              <p className="text-[10px] text-slate-400">6+ months since last prophy / perio maintenance</p>
+            </div>
+
+            <div className="bg-slate-900/90 border border-teal-900/60 p-3.5 rounded-xl space-y-1">
+              <div className="flex items-center justify-between font-bold text-amber-300">
+                <span>Unscheduled Treatment</span>
+                <Calendar className="w-4 h-4 text-amber-400" />
+              </div>
+              <div className="text-xl font-black font-mono text-amber-300">$14,250 Pipeline</div>
+              <p className="text-[10px] text-slate-400">12 proposed treatment plans pending scheduling</p>
+            </div>
+
+            <div className="bg-slate-900/90 border border-teal-900/60 p-3.5 rounded-xl space-y-1">
+              <div className="flex items-center justify-between font-bold text-emerald-300">
+                <span>Auto-Booking Conversion</span>
+                <ArrowUpRight className="w-4 h-4 text-emerald-400" />
+              </div>
+              <div className="text-xl font-black font-mono text-emerald-300">41.8% Retention</div>
+              <p className="text-[10px] text-slate-400">Patients rebooking via SMS links</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Two-Column 2-Way Texting Interface */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[580px]">
