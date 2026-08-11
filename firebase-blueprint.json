@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "patients": {
+      "title": "Patients",
+      "description": "Patient dental charts and demographic information",
+      "type": "collection",
+      "path": "patients",
+      "schema": {
+        "properties": {
+          "chartNumber": { "type": "string" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "dob": { "type": "string" },
+          "gender": { "type": "string" },
+          "phone": { "type": "string" },
+          "email": { "type": "string" },
+          "address": { "type": "string" },
+          "insuranceProvider": { "type": "string" },
+          "policyNumber": { "type": "string" },
+          "groupNumber": { "type": "string" },
+          "balanceDue": { "type": "number" },
+          "lastVisit": { "type": "string" },
+          "nextRecall": { "type": "string" }
+        },
+        "required": ["chartNumber", "firstName", "lastName"]
+      }
+    },
+    "appointments": {
+      "title": "Appointments",
+      "description": "Operatory schedule and patient appointments",
+      "type": "collection",
+      "path": "appointments",
+      "schema": {
+        "properties": {
+          "patientId": { "type": "string" },
+          "patientName": { "type": "string" },
+          "operatory": { "type": "string" },
+          "time": { "type": "string" },
+          "duration": { "type": "number" },
+          "procedure": { "type": "string" },
+          "status": { "type": "string" },
+          "provider": { "type": "string" }
+        },
+        "required": ["patientId", "time", "procedure"]
+      }
+    }
+  }
+}
